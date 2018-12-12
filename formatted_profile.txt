@@ -1,0 +1,72 @@
+Timer unit: 1e-06 s
+
+Total time: 0.96945 s
+File: wordbrainsolver.py
+Function: peek_neighbors at line 67
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    67                                           @profile
+    68                                           def peek_neighbors(root, node, wmap, path_l, path_c, depth, goal,
+    69                                                              position, word_n, hint, res, result):
+    70                                               "peek the neighbors"
+    71                                           
+    72                                               # Enter the next depth level of recursion
+    73     77386      34927.0      0.5      3.6      depth += 1
+    74                                           
+    75                                               # Find current coordinates
+    76     77386      35219.0      0.5      3.6      x_c = position[0]
+    77     77386      33815.0      0.4      3.5      y_c = position[1]
+    78                                               # If depth reaches the bottom
+    79                                               # (e.g. the bottom of a 4-letter word is depth = 4)
+    80                                               # tree.find_word() returns 2 bool values. The first to check if the
+    81                                               # string is on a branch, the second to check if the string is a word
+    82     77386      39081.0      0.5      4.0      if depth == goal and find_letter(node, path_l[depth-1])[1]:
+    83                                           
+    84                                                   # Make a copy of res in case all the words (including
+    85                                                   # those don't have following solutions) are appended to res
+    86       110         58.0      0.5      0.0          res = res.copy()
+    87       110         59.0      0.5      0.0          res.append(path_l)
+    88                                           
+    89                                                   # Number of words obtained
+    90       110         56.0      0.5      0.0          word_n += 1
+    91       110         74.0      0.7      0.0          if word_n < len(hint):
+    92       109      22546.0    206.8      2.3              new_wmap = create_new_map(wmap, path_c)
+    93                                           
+    94                                                       # Double recursive, find_words calls peek_neighbors
+    95                                                       # and peek_neighbors calls find_words
+    96       109        841.0      7.7      0.1              find_words(root, new_wmap, hint, word_n, res, result)
+    97                                                   else:
+    98                                           
+    99                                                       # Get all possible full paths
+   100         1          2.0      2.0      0.0              result.add(tuple(res))
+   101                                           
+   102                                               # If depth does not reach the bottom
+   103     77276      74035.0      1.0      7.6      elif (depth < goal and find_letter(node, path_l[depth-1])[0]):
+   104     18114       9557.0      0.5      1.0          node = node[path_l[depth-1]]
+   105                                           
+   106                                                   # Iterate through all neighbors and find the available neighbors
+   107     18114       9203.0      0.5      0.9          wmap_len = len(wmap)
+   108     72456      33985.0      0.5      3.5          for i in [-1, 0, 1]:
+   109     54342      30080.0      0.6      3.1              if (x_c+i < 0 or x_c+i >= wmap_len):
+   110      2163        952.0      0.4      0.1                  continue
+   111     48389      29428.0      0.6      3.0              col_len = len(wmap[x_c+i])
+   112    193556      96195.0      0.5      9.9              for j in [-1, 0, 1]:
+   113    145167     102823.0      0.7     10.6                  if (y_c+j < 0 or y_c+j >= col_len or (x_c+i, y_c+j) in path_c):
+   114     42391      18606.0      0.4      1.9                      continue
+   115     75717      76905.0      1.0      7.9                  if (wmap[x_c+i][y_c+j] != hint[word_n][depth]
+   116     75715      39126.0      0.5      4.0                          and hint[word_n][depth] != '*'):
+   117        10          3.0      0.3      0.0                      continue
+   118                                                           # if not tree.find_word(path_l)[0]:
+   119                                                               # continue
+   120                                           
+   121                                                           # For each available neighbor, append the corresponding letter
+   122                                                           # and coordinates to a copy of the previous paths
+   123     75707      67961.0      0.9      7.0                  new_path_l = path_l+wmap[x_c+i][y_c+j]
+   124     75707      44412.0      0.6      4.6                  new_path_c = path_c.copy()
+   125     75707      46579.0      0.6      4.8                  new_path_c.append((x_c+i, y_c+j))
+   126                                           
+   127                                                           # Use the new paths and peek the next neighbors
+   128     75707      38787.0      0.5      4.0                  peek_neighbors(root, node, wmap, new_path_l, new_path_c, depth,
+   129     75707      84135.0      1.1      8.7                                 goal, (x_c+i, y_c+j), word_n, hint, res, result)
+
